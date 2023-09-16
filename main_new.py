@@ -6,10 +6,13 @@ from langchain.document_loaders import CSVLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
-from mongo_db import MongoDB
+
 
 # Add components to your system path and import the functions
 sys.path.append('./components')
+sys.path.append('./utils')
+
+from mongo_db import MongoDB
 from speech_to_text import transcribe_stream
 from faiss_response_mapping import get_similar_response
 from play_audio import play_audio_from_id

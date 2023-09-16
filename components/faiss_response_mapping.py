@@ -1,12 +1,14 @@
 from datetime import datetime
 import faiss
 from sklearn.feature_extraction.text import TfidfVectorizer
-from pymongo import MongoClient
-# from mongo_db import MongoDB
 from dotenv import load_dotenv
 import os
+import sys
 
 load_dotenv()
+
+sys.path.append('./utils')
+from mongo_db import MongoDB
 
 # Access environment variables
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
@@ -21,9 +23,14 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 mongo = MongoDB(MONGO_DB_URI, MONGO_DB_NAME) 
 
 # Fetch the possible responses from MongoDB
-cursor = MONGO_DB_COLLECTION.find({})
-given_responses = [doc['response'] for doc in cursor]  # Assuming 'response' is the field name in MongoDB
-object_ids = [str(doc['_id']) for doc in cursor]
+collection = mongo.db[MONGO_DB_COLLECTION]
+cursor = collection.find({})
+
+given_responses = []
+object_ids = []
+for doc in cursor:
+    given_responses.append(doc['response'])
+    object_ids.append(str(doc['_id']))
 
 vectorizer = TfidfVectorizer()
 response_matrix = vectorizer.fit_transform(given_responses).toarray()
@@ -36,6 +43,7 @@ index.add(response_matrix.astype("float32"))
 def find_most_similar(input_sentence):
     vectorized_sentence = vectorizer.transform([input_sentence]).toarray().astype("float32")
     distances, indices = index.search(vectorized_sentence, k=1)
+
     similarity_score = 1 / (1 + distances[0][0])
 
     return object_ids[indices[0][0]], similarity_score
@@ -44,7 +52,9 @@ def get_similar_response(input_sentence):
     start_time = datetime.now()
 
     matched_object_id, similarity_score = find_most_similar(input_sentence)
-    matched_response = given_responses[given_responses.index(matched_object_id)]
+
+    matched_index = object_ids.index(matched_object_id)
+    matched_response = given_responses[matched_index]
 
     end_time = datetime.now()
     time_taken = (end_time - start_time).total_seconds()  # Time taken in seconds
@@ -64,6 +74,6 @@ def get_similar_response(input_sentence):
 
     return matched_object_id, matched_response
 
-input_sentence="Absolutely, we have numerous success stories to share! Countless clients have reached their career aspirations thanks to our team. Check out their testimonials on our site.",
+input_sentence="Absolutely, we have numerous success stories to share! Countless clients have reached their career aspirations thanks to our team. Check out their testimonials on our site."
     
 get_similar_response(input_sentence)
