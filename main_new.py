@@ -12,6 +12,7 @@ from mongo_db import MongoDB
 sys.path.append('./components')
 from speech_to_text import transcribe_stream
 from faiss_response_mapping import get_similar_response
+from play_audio import play_audio_from_id
 
 # Load environment variables from .env file
 load_dotenv()
@@ -62,15 +63,16 @@ def chat_with_user():
         response = chain({"question": full_query})
 
         # Process the response from LangChain using get_similar_response
-        processed_response = get_similar_response(response['result'])
+        matched_object_id, matched_response = get_similar_response(response['result'])
+        play_audio_from_id(matched_object_id)
 
-        chat_history.append((query, processed_response))
+        chat_history.append((query, matched_response))
 
         # Save the response to MongoDB
         conversation_id = generate_unique_id()
-        mongo.insert_response(processed_response, conversation_id)
+        mongo.insert_response(matched_response, conversation_id)
 
-        print(processed_response)
+        print(matched_response)
 
     return chat_history
 
