@@ -1,4 +1,9 @@
 from sentence_transformers import SentenceTransformer, util
+from datetime import datetime
+
+# Print timestamp at the start
+start_time = datetime.now()
+print("Start Time:", start_time)
 
 # Load pretrained SBERT model
 model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
@@ -31,6 +36,11 @@ def find_most_similar(input_sentence):
 
 
 # Testing
-input_sentence = "What is your Name"
+input_sentence = "share CV on WhatsApp only"
 response, similarity_score = find_most_similar(input_sentence)
 print(response, similarity_score)
+
+# Print timestamp at the end
+end_time = datetime.now()
+print("End Time:", end_time)
+print("Total Time:", end_time - start_time)
