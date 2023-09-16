@@ -2,7 +2,7 @@ from datetime import datetime
 import faiss
 from sklearn.feature_extraction.text import TfidfVectorizer
 from pymongo import MongoClient
-from mongo_db import MongoDB
+# from mongo_db import MongoDB
 from dotenv import load_dotenv
 import os
 
@@ -14,12 +14,11 @@ CSV_FILE_PATH = os.environ.get('CSV_FILE_PATH')
 MONGO_DB_URI = os.environ.get('MONGO_DB_URI')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME')
 MONGO_DB_COLLECTION = os.environ.get('MONGO_DB_COLLECTION')
+MONGO_DB_COLLECTION_ENTRY = os.environ.get('MONGO_DB_COLLECTION_ENTRY')
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 mongo = MongoDB(MONGO_DB_URI, MONGO_DB_NAME) 
-
-
 
 # Fetch the possible responses from MongoDB
 cursor = MONGO_DB_COLLECTION.find({})
@@ -45,19 +44,26 @@ def get_similar_response(input_sentence):
     start_time = datetime.now()
 
     matched_object_id, similarity_score = find_most_similar(input_sentence)
-    matched_response = given_responses[given_responses.index(matched_object_id)]  # Assuming `given_responses` is available in the scope
+    matched_response = given_responses[given_responses.index(matched_object_id)]
 
     end_time = datetime.now()
     time_taken = (end_time - start_time).total_seconds()  # Time taken in seconds
 
-    print("Input Text:", input_sentence)
-    print("Matched MongoDB ObjectID:", matched_object_id)
-    print("Matched Response:", matched_response)
-    print(f"Similarity Score: {similarity_score:.4f}")
-    print(f"Time Taken: {time_taken:.4f} seconds")
-    print("---------------------------------------------------------")
-    
+    # Construct the data to be added to MongoDB
+    data_to_insert = {
+        "input_text": input_sentence,
+        "output_text": matched_response,
+        "matched_object_id": matched_object_id,
+        "matched_response": matched_response,
+        "similarity_score": similarity_score,
+        "time_taken": time_taken
+    }
+
+    # Insert the data into the MONGO_DB_COLLECTION_ENTRY collection
+    mongo.db[MONGO_DB_COLLECTION_ENTRY].insert_one(data_to_insert)
+
     return matched_object_id, matched_response
 
-
-# get_similar_response(input_sentence)
+input_sentence="Absolutely, we have numerous success stories to share! Countless clients have reached their career aspirations thanks to our team. Check out their testimonials on our site.",
+    
+get_similar_response(input_sentence)
