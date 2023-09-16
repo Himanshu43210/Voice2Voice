@@ -1,13 +1,14 @@
 import os
 import uuid
+import sys
 from dotenv import load_dotenv
 from langchain.document_loaders import CSVLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
-from mongo_db import MongoDB  # Import the MongoDB class
+from mongo_db import MongoDB
 
-import sys
+# Add components to your system path and import the functions
 sys.path.append('./components')
 from speech_to_text import transcribe_stream
 from faiss_response_mapping import get_similar_response
@@ -20,6 +21,7 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 CSV_FILE_PATH = os.environ.get('CSV_FILE_PATH')
 MONGO_DB_URI = os.environ.get('MONGO_DB_URI')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME')
+MONGO_DB_COLLECTION = os.environ.get('MONGO_DB_COLLECTION')
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
@@ -47,8 +49,10 @@ def chat_with_user():
     print(opening_line)
 
     while True:
-        query = input("Please enter your query (or type 'exit' to end): ")
+        # Use the transcribe_stream function to get the query
+        query = transcribe_stream()
 
+        # Exit condition
         if query.lower() == 'exit':
             break
 
@@ -57,13 +61,16 @@ def chat_with_user():
 
         response = chain({"question": full_query})
 
-        chat_history.append((query, response['result']))
+        # Process the response from LangChain using get_similar_response
+        processed_response = get_similar_response(response['result'])
+
+        chat_history.append((query, processed_response))
 
         # Save the response to MongoDB
         conversation_id = generate_unique_id()
-        mongo.insert_response(response['result'], conversation_id)
+        mongo.insert_response(processed_response, conversation_id)
 
-        print(response['result'])
+        print(processed_response)
 
     return chat_history
 
@@ -77,21 +84,3 @@ if __name__ == "__main__":
     chat_history = chat_with_user()
     save_chat_to_txt('chat_history.txt', chat_history)
     mongo.close_connection()  # Close the MongoDB connection
-
-while True:
-    print("Start speaking or say 'exit' to end...")
-    
-    # Transcribe the user's voice input
-    prompt_text = transcribe_stream()
-    
-    if 'exit' in prompt_text.lower():
-        break
-
-    # Translate or process the transcription
-    processed_text = translate_or_process(prompt_text) ###############
-    
-    # Get a matching response using Faiss
-    response = get_similar_response(processed_text)
-    
-    # Convert the text response into audible feedback
-    speak(response)  ##############
