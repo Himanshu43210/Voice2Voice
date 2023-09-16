@@ -4,4 +4,7 @@ python-dotenv
 chromadb
 tiktoken
 pymongo
-sentence_transformers
+# sentence_transformers
+# pandas
+# faiss 
+scikit-learn

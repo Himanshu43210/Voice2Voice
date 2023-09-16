@@ -1,37 +1,36 @@
-from sentence_transformers import SentenceTransformer, util
 from datetime import datetime
+import faiss
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Load pretrained SBERT model
-model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+# Read the possible responses from a .txt file
+with open("possibleResponses.txt", "r") as file:
+    given_responses = [line.strip() for line in file.readlines()]
 
-# Read the 500 sentences from the file
-with open("possibalResponses.txt", "r") as file:
-    sentences_500 = file.readlines()
+vectorizer = TfidfVectorizer()
+response_matrix = vectorizer.fit_transform(given_responses).toarray()
 
-# Remove any newline characters
-sentences_500 = [sentence.strip() for sentence in sentences_500]
+# Define the dimensionality of the vectors
+d = response_matrix.shape[1]
 
-# Compute and store embeddings for the 500 sentences
-embeddings_500 = model.encode(sentences_500, convert_to_tensor=True)
+# Create a FAISS index for the given responses
+index = faiss.IndexFlatL2(d)
+index.add(response_matrix.astype("float32"))
 
 
-# Function to find the most similar sentence
 def find_most_similar(input_sentence):
-    input_embedding = model.encode(input_sentence, convert_to_tensor=True)
+    vectorized_sentence = (
+        vectorizer.transform([input_sentence]).toarray().astype("float32")
+    )
 
-    max_similarity = -1.0
-    most_similar_sentence = None
+    # Search the index for the closest vector
+    distances, indices = index.search(vectorized_sentence, k=1)
 
-    for i, embedding in enumerate(embeddings_500):
-        similarity = util.pytorch_cos_sim(input_embedding, embedding).item()
-        if similarity > max_similarity:
-            max_similarity = similarity
-            most_similar_sentence = sentences_500[i]
+    # Convert the L2 distance to a similarity score between 0 and 1
+    similarity_score = 1 / (1 + distances[0][0])
 
-    return most_similar_sentence, max_similarity
+    return given_responses[indices[0][0]], similarity_score
 
 
-# List of input sentences
 input_sentences = [
     "Absolutely, we have numerous success stories to share! Countless clients have reached their career aspirations thanks to our team. Check out their testimonials on our site.",
     "Indeed, our portfolio includes many success stories! Through our assistance, numerous clients have realized their professional dreams. Their accounts are available for reading on our webpage.",

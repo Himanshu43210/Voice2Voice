@@ -9,7 +9,7 @@ print("Start Time:", start_time)
 model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
 
 # Read the 500 sentences from the file
-with open("possibalResponses.txt", "r") as file:
+with open("possibleResponses.txt", "r") as file:
     sentences_500 = file.readlines()
 
 # Remove any newline characters
