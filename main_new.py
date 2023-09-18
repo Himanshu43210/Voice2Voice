@@ -74,12 +74,14 @@ def chat_with_user():
         end_time_langchain = datetime.now()
         time_taken_langchain = (end_time_langchain - end_time).total_seconds()
         print(f'Time taken in LangChain: {time_taken_langchain}')
+        print(response)
 
         # Process the response from LangChain using get_similar_response
         matched_object_id, matched_response = get_similar_response(response['result'])
         end_time_faiss = datetime.now()
         time_taken_faiss = (end_time_faiss - end_time_langchain).total_seconds()
         print(f'Time taken in matching response: {time_taken_faiss}')
+        print(matched_response)
 
         play_audio_from_id(matched_object_id)
 
