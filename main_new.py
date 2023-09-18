@@ -89,7 +89,7 @@ def chat_with_user():
 
         # Save the response to MongoDB
         conversation_id = generate_unique_id()
-        mongo.insert_response(matched_response, conversation_id)
+        # mongo.insert_response(matched_response, conversation_id)
 
         print(matched_response)
 
