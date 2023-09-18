@@ -54,11 +54,11 @@ def chat_with_user():
 
     while True:
         # Use the transcribe_stream function to get the query
-        start_time = datetime.datetime.now()
-        print(f'Main function began: {start_time.strftime("%Y-%m-%d %H:%M:%S")}')
+        start_time = datetime.now()
         query = transcribe_stream()
-        Streamed = datetime.datetime.now()
-        print(f'Streamed: {Streamed.strftime("%Y-%m-%d %H:%M:%S")}')
+        end_time = datetime.now()
+        time_taken = (end_time - start_time).total_seconds()
+        print(f'Time taken in STT: {time_taken}')
 
         play_random_filler()
 
@@ -69,20 +69,18 @@ def chat_with_user():
         context = ". ".join([entry[0] + ". " + entry[1] for entry in chat_history])
         full_query = context + ". " + query if context else query
 
-        time_stamp = datetime.datetime.now()
-        print(f'Query given to langchain: {time_stamp.strftime("%Y-%m-%d %H:%M:%S")}')
-
         response = chain({"question": full_query})
 
-        time_stamp = datetime.datetime.now()
-        print(f'Langchain answer received: {time_stamp.strftime("%Y-%m-%d %H:%M:%S")}')
-
+        end_time_langchain = datetime.now()
+        time_taken_langchain = (end_time_langchain - end_time).total_seconds()
+        print(f'Time taken in LangChain: {time_taken_langchain}')
 
         # Process the response from LangChain using get_similar_response
         matched_object_id, matched_response = get_similar_response(response['result'])
-        
-        time_stamp = datetime.datetime.now()
-        print(f'Matched response received: {time_stamp.strftime("%Y-%m-%d %H:%M:%S")}')
+        end_time_faiss = datetime.now()
+        time_taken_faiss = (end_time_faiss - end_time_langchain).total_seconds()
+        print(f'Time taken in matching response: {time_taken_faiss}')
+
         play_audio_from_id(matched_object_id)
 
         chat_history.append((query, matched_response))
