@@ -64,7 +64,6 @@ def get_similar_response(input_sentence):
         "input_text": input_sentence,
         "output_text": matched_response,
         "matched_object_id": matched_object_id,
-        "matched_response": matched_response,
         "similarity_score": similarity_score,
         "time_taken": time_taken
     }
