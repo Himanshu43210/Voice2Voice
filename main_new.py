@@ -6,7 +6,7 @@ from langchain.document_loaders import CSVLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
-
+import datetime
 
 # Add components to your system path and import the functions
 sys.path.append('./components')
@@ -54,8 +54,11 @@ def chat_with_user():
 
     while True:
         # Use the transcribe_stream function to get the query
+        start_time = datetime.datetime.now()
+        print(f'Main function began: {start_time.strftime("%Y-%m-%d %H:%M:%S")}')
         query = transcribe_stream()
-
+        Streamed = datetime.datetime.now()
+        print(f'Streamed: {Streamed.strftime("%Y-%m-%d %H:%M:%S")}')
         # Exit condition
         if query.lower() == 'exit':
             break
@@ -63,10 +66,20 @@ def chat_with_user():
         context = ". ".join([entry[0] + ". " + entry[1] for entry in chat_history])
         full_query = context + ". " + query if context else query
 
+        time_stamp = datetime.datetime.now()
+        print(f'Query given to langchain: {time_stamp.strftime("%Y-%m-%d %H:%M:%S")}')
+
         response = chain({"question": full_query})
+
+        time_stamp = datetime.datetime.now()
+        print(f'Langchain answer received: {time_stamp.strftime("%Y-%m-%d %H:%M:%S")}')
+
 
         # Process the response from LangChain using get_similar_response
         matched_object_id, matched_response = get_similar_response(response['result'])
+        
+        time_stamp = datetime.datetime.now()
+        print(f'Matched response received: {time_stamp.strftime("%Y-%m-%d %H:%M:%S")}')
         play_audio_from_id(matched_object_id)
 
         chat_history.append((query, matched_response))
