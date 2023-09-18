@@ -15,7 +15,7 @@ sys.path.append('./utils')
 from mongo_db import MongoDB
 from speech_to_text import transcribe_stream
 from faiss_response_mapping import get_similar_response
-from play_audio import play_audio_from_id
+from play_audio import play_audio_from_id, play_random_filler
 
 # Load environment variables from .env file
 load_dotenv()
@@ -59,6 +59,9 @@ def chat_with_user():
         query = transcribe_stream()
         Streamed = datetime.datetime.now()
         print(f'Streamed: {Streamed.strftime("%Y-%m-%d %H:%M:%S")}')
+
+        play_random_filler()
+
         # Exit condition
         if query.lower() == 'exit':
             break
