@@ -49,7 +49,7 @@ def chat_with_user():
 
     chat_history = []
 
-    opening_line = "Hello, I'm Jacob from AryanTech Company. I'm calling you regarding our service to assist you in securing a job. Are you looking for any job opportunities right now?"
+    opening_line = "Hello I'm Ishan from AryanTech Motors. We noticed that you were looking for some cars on our website. Are you interested in purchasing a new car at the moment?"
     print(opening_line)
 
     while True:
