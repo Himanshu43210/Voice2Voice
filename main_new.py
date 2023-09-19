@@ -51,6 +51,8 @@ def chat_with_user():
 
     opening_line = "Hello I'm Ishan from AryanTech Motors. We noticed that you were looking for some cars on our website. Are you interested in purchasing a new car at the moment?"
     print(opening_line)
+    Intro = opening_line
+    play_audio_from_id(Intro)
 
     while True:
         # Use the transcribe_stream function to get the query
