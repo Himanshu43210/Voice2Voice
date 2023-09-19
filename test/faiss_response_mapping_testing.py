@@ -3,7 +3,7 @@ import faiss
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Read the possible responses from a .txt file
-with open("possibleResponses.txt", "r") as file:
+with open("needToTest.txt", "r") as file:
     given_responses = [line.strip() for line in file.readlines()]
 
 vectorizer = TfidfVectorizer()
