@@ -7,6 +7,8 @@ from langchain.indexes import VectorstoreIndexCreator
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
 import datetime
+from playsound import playsound
+
 
 # Add components to your system path and import the functions
 sys.path.append('./components')
@@ -52,13 +54,16 @@ def chat_with_user():
     opening_line = "Hello I'm Ishan from AryanTech Motors. We noticed that you were looking for some cars on our website. Are you interested in purchasing a new car at the moment?"
     print(opening_line)
     Intro = opening_line
-    play_audio_from_id(Intro)
+    #play_audio_from_id('Intro')
+    # fname = r"C:\Users\LENOVO\Documents\GitHub\Voice2VoiceAashi\components\audio_files\Intro.mp3"
+    # playsound(fname)
+    play_audio_from_id('65086be7dea445ad95371510')
 
     while True:
         # Use the transcribe_stream function to get the query
-        start_time = datetime.now()
+        start_time = datetime.datetime.now()
         query = transcribe_stream()
-        end_time = datetime.now()
+        end_time = datetime.datetime.now()
         time_taken = (end_time - start_time).total_seconds()
         print(f'Time taken in STT: {time_taken}')
 
@@ -73,14 +78,14 @@ def chat_with_user():
 
         response = chain({"question": full_query})
 
-        end_time_langchain = datetime.now()
+        end_time_langchain = datetime.datetime.now()
         time_taken_langchain = (end_time_langchain - end_time).total_seconds()
         print(f'Time taken in LangChain: {time_taken_langchain}')
         print(response)
 
         # Process the response from LangChain using get_similar_response
         matched_object_id, matched_response = get_similar_response(response['result'])
-        end_time_faiss = datetime.now()
+        end_time_faiss = datetime.datetime.now()
         time_taken_faiss = (end_time_faiss - end_time_langchain).total_seconds()
         print(f'Time taken in matching response: {time_taken_faiss}')
         print(matched_response)
@@ -92,8 +97,6 @@ def chat_with_user():
         # Save the response to MongoDB
         conversation_id = generate_unique_id()
         # mongo.insert_response(matched_response, conversation_id)
-
-        print(matched_response)
 
     return chat_history
 
