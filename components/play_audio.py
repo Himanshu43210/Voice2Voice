@@ -9,8 +9,8 @@ def play_audio_from_id(matched_object_id):
 
 import random
 import os
-from playsound import playsound
 import threading
+import pygame
 
 def play_random_filler(folder_path='./components/fillers'):
     # Given list of fillers
@@ -19,5 +19,12 @@ def play_random_filler(folder_path='./components/fillers'):
     # Select a random filler
     chosen_filler = random.choice(fillers)
 
-    # Play the chosen filler using playsound in a separate thread
-    threading.Thread(target=playsound, args=(os.path.join(folder_path, chosen_filler),)).start()
+    # Play the chosen filler using pygame in a separate thread
+    def play_sound(file_path):
+        pygame.mixer.init()
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy() == True:
+            continue
+
+    threading.Thread(target=play_sound, args=(os.path.join(folder_path, chosen_filler),)).start()
