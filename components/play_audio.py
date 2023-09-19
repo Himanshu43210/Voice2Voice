@@ -1,7 +1,7 @@
 from playsound import playsound
 
 def play_audio_from_id(matched_object_id):
-    filename = matched_object_id + ".mp3"
+    filename = f"components/audio_files/{matched_object_id}.mp3"
     try:
         playsound(filename)
     except Exception as e:
