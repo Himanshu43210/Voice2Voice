@@ -36,12 +36,12 @@ def extend_responses():
     # Connect to the MongoDB server and get the collections
     client = MongoClient(MONGO_DB_URI)
     db = client[MONGO_DB_NAME]
-    responses = db['responses']
-    responses_ext = db['responses_ext']
+    responses = db['car_responses1']
+    responses_ext = db['car_ext']
 
     # Iterate over each document in the responses collection
     for doc in responses.find():
-        original_response = doc['response']
+        original_response = doc['car_responses1']
         generated_sentences = generate_sentences_from_response(original_response)
 
         # Store each generated sentence in responses_ext with a reference to the original ID
