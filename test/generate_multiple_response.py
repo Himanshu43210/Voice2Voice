@@ -41,7 +41,7 @@ def extend_responses():
 
     # Iterate over each document in the responses collection
     for doc in responses.find():
-        original_response = doc['car_responses1']
+        original_response = doc['response']
         generated_sentences = generate_sentences_from_response(original_response)
 
         # Store each generated sentence in responses_ext with a reference to the original ID
