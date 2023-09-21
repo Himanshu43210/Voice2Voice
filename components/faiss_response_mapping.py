@@ -48,7 +48,7 @@ def find_most_similar(input_sentence):
 
     return object_ids[indices[0][0]], similarity_score
 
-def get_similar_response(input_sentence):
+def get_similar_response(input_sentence, conversation_id, query):
     start_time = datetime.now()
 
     matched_object_id, similarity_score = find_most_similar(input_sentence)
@@ -61,18 +61,17 @@ def get_similar_response(input_sentence):
 
     # Construct the data to be added to MongoDB
     data_to_insert = {
+        "conversation_id": conversation_id,
+        "user": query,
         "input_text": input_sentence,
         "output_text": matched_response,
         "matched_object_id": matched_object_id,
         "similarity_score": similarity_score,
-        "time_taken": time_taken
+        "time_taken": time_taken,
+        "time_stamp": str(end_time)
     }
 
     # Insert the data into the MONGO_DB_COLLECTION_ENTRY collection
     mongo.db[MONGO_DB_COLLECTION_ENTRY].insert_one(data_to_insert)
 
     return matched_object_id, matched_response
-
-input_sentence="Absolutely, we have numerous success stories to share! Countless clients have reached their career aspirations thanks to our team. Check out their testimonials on our site."
-    
-get_similar_response(input_sentence)
