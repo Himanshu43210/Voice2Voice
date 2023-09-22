@@ -14,7 +14,7 @@ import pygame
 
 def play_random_filler(folder_path='./components/fillers'):
     # Given list of fillers
-    fillers = ["alright.mp3", "Gotcha.mp3", "hm_hm.mp3", "okay.mp3", "right.mp3", "yeah.mp3", "yes.mp3"]
+    fillers = ["alright.mp3", "gotcha.mp3", "hm_hm.mp3", "okay!.mp3", "okay.mp3", "right.mp3", "yeah.mp3", "yes.mp3"]
 
     # Select a random filler
     chosen_filler = random.choice(fillers)
