@@ -25,6 +25,7 @@ def query_mismatched_responses():
 
     # Display the specified fields for each document and add to the list
     for doc in mismatched_docs:
+        doc.pop('_id', None)  # Remove the _id field from doc
         print("Response:", doc.get("response"))
         print("Matched Text:", doc.get("matched_text"))
         print("Reference Text:", doc.get("reference_text"))
