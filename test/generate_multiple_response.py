@@ -9,6 +9,10 @@ MONGO_DB_URI = os.environ.get('MONGO_DB_URI')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME')
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
+# Collection names
+MAIN_COLLECTION = 'car_responses1'
+EXT_COLLECTION = 'car_ext'
+
 # Initialize OpenAI's API
 openai.api_key = OPENAI_API_KEY
 
@@ -32,13 +36,15 @@ def generate_sentences_from_response(response_text):
     # Split the response text based on the delimiter and return the list of sentences
     return response.choices[0]['text'].split('_#_#_')
 
+
 def extend_responses():
     # Connect to the MongoDB server and get the collections
     client = MongoClient(MONGO_DB_URI)
     db = client[MONGO_DB_NAME]
-    responses = db['car_responses1']
-    responses_ext = db['car_ext']
+    responses = db[MAIN_COLLECTION]
+    responses_ext = db[EXT_COLLECTION]
 
+    
     # Iterate over each document in the responses collection
     for doc in responses.find():
         original_response = doc['response']
@@ -55,6 +61,8 @@ def extend_responses():
 
     client.close()
 
+
 # Call the function
 if __name__ == "__main__":
     extend_responses()
+
