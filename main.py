@@ -76,7 +76,7 @@ def chat_with_user():
         context = ". ".join([entry[0] + ". " + entry[1] for entry in chat_history])
         full_query = context + ". " + query if context else query
 
-        response = chain({"question": full_query})
+        response = chain({"Chat History": full_query})
 
         end_time_langchain = datetime.datetime.now()
         time_taken_langchain = (end_time_langchain - end_time).total_seconds()
