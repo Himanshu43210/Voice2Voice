@@ -72,15 +72,16 @@ def chat_with_user():
         
         # Append current query to chat_history before determining the last_query.
         chat_history.append((query, ""))  # Temporary append, will update the response later.
-        
+
         # Now determine the last query, which is the current query.
-        last_query = "Query: " + query  # Because it is the most recent one.
+        last_query = '"Query": ' + ' '.join(['"' + query + '"' for _ in range(3)])
 
         # Emphasizing the last query by repeating it.
-        emphasized_query = " ".join([last_query] * 3)
+        emphasized_query = last_query  # As it is already repeated.
 
         # Combining the context with the emphasized last query to form the full_query.
         full_query = context + ". " + emphasized_query if context else emphasized_query
+
 
         response = chain({"question": full_query})
 
