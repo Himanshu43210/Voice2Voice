@@ -36,8 +36,8 @@ def extend_responses():
     # Connect to the MongoDB server and get the collections
     client = MongoClient(MONGO_DB_URI)
     db = client[MONGO_DB_NAME]
-    responses = db['responses']
-    responses_ext = db['responses_ext']
+    responses = db['car_responses1']
+    responses_ext = db['car_ext']
 
     # Iterate over each document in the responses collection
     for doc in responses.find():
