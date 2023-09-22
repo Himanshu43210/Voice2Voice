@@ -4,21 +4,22 @@ from pymongo import MongoClient
 
 # Load environment variables from .env file
 load_dotenv()
-MONGO_DB_URI = os.environ.get('MONGO_DB_URI')  
-MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME') 
+MONGO_DB_URI = os.environ.get('MONGO_DB_URI')
+MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME')
 
-# Connect to MongoDB
-client = MongoClient(MONGO_DB_URI)
-db = client[MONGO_DB_NAME]
+# Collection name
+EXT_COLLECTION = 'car_ext'
+MISMATCHED_COLLECTION ='mismatched_responses1'
 
 def query_mismatched_responses():
-    # Query the collection for documents where matched_text and reference_text are not the same
-    mismatched_docs = db.responses_ext1.find({
+    client = MongoClient(MONGO_DB_URI)
+    db = client[MONGO_DB_NAME]
+    mismatched_docs = db[EXT_COLLECTION].find({
         "$expr": {
             "$ne": ["$matched_text", "$reference_text"]
         }
     })
-
+    
     # List to store mismatched documents
     mismatched_list = []
 
@@ -35,7 +36,7 @@ def query_mismatched_responses():
 
     # Insert mismatched documents into the mismatched_responses collection
     if mismatched_list:
-        db.mismatched_responses.insert_many(mismatched_list)
+        db[MISMATCHED_COLLECTION].insert_many(mismatched_list)
 
     # Close the MongoDB connection
     client.close()

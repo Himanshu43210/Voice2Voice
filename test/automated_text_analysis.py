@@ -3,17 +3,22 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from faiss_response_mapping_testing import find_most_similar
+
 # Load environment variables from .env file
 load_dotenv()
 MONGO_DB_URI = os.environ.get('MONGO_DB_URI')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME')
+
+# Collection name
+MAIN_COLLECTION = 'car_responses1'
+EXT_COLLECTION = 'car_ext'
 
 # Connect to MongoDB using the environment variables
 client = MongoClient(MONGO_DB_URI)
 db = client[MONGO_DB_NAME]
 
 def get_reference_text(reference_id):
-    doc = db.responses.find_one({"_id": reference_id})
+    doc = db[MAIN_COLLECTION].find_one({"_id": reference_id})
     return doc.get("response") if doc else None
 
 def process_chunk(chunk):
@@ -41,14 +46,18 @@ def process_chunk(chunk):
             if reference_text:
                 update_data["reference_text"] = reference_text
         
-        db.responses_ext.update_one({"_id": doc["_id"]}, {"$set": update_data})
+        db[EXT_COLLECTION].update_one({"_id": doc["_id"]}, {"$set": update_data})
+
 
 def main():
     CHUNK_SIZE = 50
     skip = 0
 
+    client = MongoClient(MONGO_DB_URI)
+    db = client[MONGO_DB_NAME]
+
     while True:
-        chunk = list(db.responses_ext.find().skip(skip).limit(CHUNK_SIZE))
+        chunk = list(db[EXT_COLLECTION].find().skip(skip).limit(CHUNK_SIZE))
         if not chunk:
             break
         process_chunk(chunk)
