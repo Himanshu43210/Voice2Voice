@@ -49,50 +49,72 @@ def chat_with_user():
         input_key="question"
     )
 
-    chat_history = []
 
-    opening_line = "Hello I'm Ishan from AryanTech Motors. We noticed that you were looking for some cars on our website. Are you interested in purchasing a new car at the moment?"
+    opening_line = "Hello I'm Jenny from Gadget Hub. We noticed that you were looking for Google Pixel phone on our website. Are you interested in purchasing a new phone at the moment?"
     print(opening_line)
-    Intro = opening_line
-    #play_audio_from_id('Intro')
-    # fname = r"C:\Users\LENOVO\Documents\GitHub\Voice2VoiceAashi\components\audio_files\Intro.mp3"
-    # playsound(fname)
-    # play_audio_from_id('65086be7dea445ad95371510')
-
+    play_audio_from_id('6511dcf3a21e2967d51e39d9')
+    
+    chat_history = [('Response', opening_line)]
+    #sales_bot_statement = 'You are a sales bot and you are having a conversation with a user, and your task is to convince the user to buy Google pixel. Also ask the user to visit your shop to try it. Ask for their name and contact number to confirm the appointment. Respond to the user accordingly. '
+    #sales_bot_statement ="You are a sales bot. Your primary goal is to engage the user in a conversation and persuade them to purchase a Google Pixel phone. Utilize persuasive communication, focusing on the features and benefits of the Google Pixel, to entice the user’s interest. Should the user exhibit interest, suggest they visit the shop to experience the phone firsthand and try it out. Once interest is confirmed or the user seems inclined, proceed to ask the user’s name and contact number to schedule an appointment for them to visit the shop. Be polite, professional, and responsive to the user's inquiries and concerns, addressing them appropriately to facilitate the sales process."
+    
+    ####sales_bot_statement = "You are a sales bot. Your main objective is to convince the user to buy a Google Pixel phone. Begin the conversation by discussing the benefits and features of Google Pixel. If the user shows interest in buying or knowing more, encourage them to visit the shop to experience the product firsthand. Be attentive to user's reactions and responses. If the user seems interested or willing to visit the shop, politely ask for their name and contact number to book an appointment for them. Say something like 'Can I have your name and contact number to schedule an appointment for you to visit our shop?'. Ensure to be courteous and maintain a friendly tone throughout the conversation, addressing any inquiries or concerns the user may have to facilitate the sales process. Give response to the last query and continue the conversation accordingly"
+    #sales_bot_statement = "You are a sales bot. Your main objective is to convince the user to buy a Google Pixel phone. Begin the conversation by discussing the benefits and features of Google Pixel. Then focus on encouraging them to visit the shop to experience the product firsthand. Be attentive to user's reactions and responses. Then politely ask for their name and contact number to book an appointment for them. Say something like 'Can I have your name and contact number to schedule an appointment for you to visit our shop?'.  Give response and continue the conversation accordingly. Do not repeat the sentences that you have been already said."
+    sales_bot_statement = "You are a sales bot. Your main objective is to convince the user to buy a Google Pixel phone rather than Iphone. Begin the conversation by discussing the benefits and features of Google Pixel. If the user shows interest in buying or knowing more, encourage them to visit the shop to experience the product firsthand. Be attentive to user's reactions and responses. If the user seems interested or willing to visit the shop, politely ask for their name and contact number to book an appointment for them. Say something like 'Can I have your name and contact number to schedule an appointment for you to visit our shop?'. Ensure to be courteous and maintain a friendly tone throughout the conversation, addressing any inquiries or concerns the user may have to facilitate the sales process. When they give you the name and number, end the conversation by telling then to have a great day.Give response to the last query and continue the conversation accordingly"
+    
+    
     while True:
-        # Use the transcribe_stream function to get the query
         start_time = datetime.datetime.now()
-        query = transcribe_stream()
-        end_time = datetime.datetime.now()
-        time_taken = (end_time - start_time).total_seconds()
+        query = transcribe_stream()  # Getting the user's query.
+        end_time_transcription = datetime.datetime.now()
+        time_taken = (end_time_transcription - start_time).total_seconds()
         print(f'Time taken in STT: {time_taken}')
 
-        play_random_filler()
+        #play_random_filler()
 
-        # Exit condition
         if query.lower() == 'exit':
             break
 
-        context = ". ".join([entry[0] + ". " + entry[1] for entry in chat_history])
-        full_query = context + ". " + query if context else query
+        # Create structured context with separate indications for user queries and responses.
+        context = ". ".join(["Query: " + entry[0] + ". Response: " + entry[1] for entry in chat_history])
+        
+        # Append current query to chat_history before determining the last_query.
+        chat_history.append((query, ""))  # Temporary append, will update the response later.
 
-        response = chain({"Chat History": full_query})
+        # Now determine the last query, which is the current query.
+        last_query = '"Query": ' + ' '.join(['"' + query + '"' for _ in range(3)])
+
+        #last_query = '"Query": "' + query + '"'
+
+
+        # Emphasizing the last query by repeating it.
+        emphasized_query = last_query  # As it is already repeated.
+
+        # Combining the context with the emphasized last query to form the full_query.
+        # full_query = context + ". " + emphasized_query if context else emphasized_query
+        full_query = sales_bot_statement + (context + ". " + emphasized_query if context else emphasized_query)
+
+        start_time_langchain = datetime.datetime.now()
+        time_taken_before_lc = (start_time_langchain - end_time_transcription).total_seconds()
+        print(f'Time taken before LangChain: {time_taken_before_lc}')
+        response = chain({"question": full_query})
 
         end_time_langchain = datetime.datetime.now()
-        time_taken_langchain = (end_time_langchain - end_time).total_seconds()
+        time_taken_langchain = (end_time_langchain - start_time_langchain).total_seconds()
         print(f'Time taken in LangChain: {time_taken_langchain}')
         print(response)
 
-        # Process the response from LangChain using get_similar_response
+        #Process the response from LangChain using get_similar_response
         matched_object_id, matched_response = get_similar_response(response['result'], conversation_id, query)
         end_time_faiss = datetime.datetime.now()
         time_taken_faiss = (end_time_faiss - end_time_langchain).total_seconds()
         print(f'Time taken in matching response: {time_taken_faiss}')
         print(matched_response)
 
-        # play_audio_from_id(matched_object_id)
+        play_audio_from_id(matched_object_id)
 
-        chat_history.append((query, matched_response))
+        # # Updating the last entry in chat_history with the correct response.
+        chat_history[-1] = (query, matched_response)
 
     return chat_history
 
