@@ -1,0 +1,8 @@
+python generate_multiple_response.py
+
+cd test 
+
+python automated_text_analysis.py
+
+
+python unmatched_text_analysis.py
