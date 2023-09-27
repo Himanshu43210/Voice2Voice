@@ -1,9 +1,12 @@
 import openai
 import os
 import csv
+import openai
 
+# OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+OPENAI_API_KEY = "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"
 
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+openai.api_key = OPENAI_API_KEY  # Set the API key explicitly
 
 def get_conversation_points(scenario):
     # Construct the context prompt with more detailing
