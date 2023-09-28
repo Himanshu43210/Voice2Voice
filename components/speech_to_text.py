@@ -33,7 +33,7 @@ def transcribe_stream():
         """Generator function to continuously yield audio data for the streaming request."""
         
         # Capture audio input with specified configurations
-        with sd.InputStream(samplerate=44100, channels=1,device=2, dtype="int16") as stream:
+        with sd.InputStream(samplerate=44100, channels=1, dtype="int16") as stream:
             while True:
                 data, _ = stream.read(512)                       # Read audio data from stream
                 yield speech.StreamingRecognizeRequest(audio_content=data.tobytes())  # Yield audio data for recognition
