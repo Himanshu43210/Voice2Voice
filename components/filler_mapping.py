@@ -76,11 +76,11 @@ def classify_and_play_audio(sentence):
     # Classify a new sentence
     audio_file = loaded_model.predict([sentence])[0]
     # Path to the audio file
-    audio_path = f"audio_fillers/{audio_file}"
+    audio_path = f"G:/Workspace/git/InfoBuilderFloor/Voice2VoiceAashi/components/audio_fillers/{audio_file}"
     # Play the audio file
     play_audio(audio_path)
 
 
 # # Usage
-# refresh_learning_data()
-# classify_and_play_audio("who are you?")
+refresh_learning_data()
+classify_and_play_audio("yeah I'm just")
