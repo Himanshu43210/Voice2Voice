@@ -8,7 +8,7 @@ from langchain.document_loaders import CSVLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.callbacks.base import BaseCallbackHandler  # Correct import here
+from langchain.callbacks.base import BaseCallbackHandler 
 import datetime
 from threading import Thread
 from queue import Queue, Empty
