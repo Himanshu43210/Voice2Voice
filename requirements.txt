@@ -9,3 +9,4 @@ pymongo
 # faiss 
 scikit-learn
 nest_asyncio
+pydub
