@@ -9,7 +9,6 @@ from langchain.llms import OpenAI
 import datetime
 from playsound import playsound
 
-
 # Add components to your system path and import the functions
 sys.path.append('./components')
 sys.path.append('./utils')
