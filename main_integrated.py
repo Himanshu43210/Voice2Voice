@@ -1,8 +1,6 @@
 import os
 import uuid
-import pymongo
 import string
-import subprocess
 from dotenv import load_dotenv
 from langchain.document_loaders import CSVLoader
 from langchain.indexes import VectorstoreIndexCreator
@@ -11,8 +9,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler 
 import datetime
 from threading import Thread
-from queue import Queue, Empty
-from collections.abc import Generator
+from queue import Queue
 import sys
 import sounddevice as sd
 import soundfile as sf
@@ -22,8 +19,6 @@ import nest_asyncio
 nest_asyncio.apply()
 from stream_text_to_audio import stream_text_to_audio
 from speech_to_text import transcribe_stream
-from pydub import AudioSegment
-from io import BytesIO
 
 # Load environment variables
 load_dotenv()
