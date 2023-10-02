@@ -1,3 +1,6 @@
+# ### conda deactivate
+# conda activate aenv
+# python main_integrated.py
 import os
 import uuid
 import string
@@ -16,6 +19,9 @@ import soundfile as sf
 import string
 import asyncio
 import nest_asyncio
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
 nest_asyncio.apply()
 from stream_text_to_audio import stream_text_to_audio
@@ -71,6 +77,19 @@ class DictionaryCallback(BaseCallbackHandler):
         self.is_answer_finished = False
         self.timeout = 0.2  # Set your desired timeout value in seconds
         self.timer = None
+        self.index = faiss.IndexFlatL2(embedding_size)  # Assuming embedding_size is the size of your embeddings
+        self.add_phrases_to_index()
+        self.model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    
+    def text_to_embedding(self, text):
+        # Convert the text to an embedding (numpy array)
+        embedding = self.model.encode([text])[0]
+        return embedding
+    
+    def add_phrases_to_index(self):
+        for phrase in self.phrases_dict.keys():
+            embedding = self.text_to_embedding(phrase)
+            self.index.add(np.array([embedding]))
 
     def start_loop(self, loop):
         asyncio.set_event_loop(loop)
@@ -127,14 +146,21 @@ class DictionaryCallback(BaseCallbackHandler):
                 self.words_list.append(separator + stripped_token)
 
         combined_words = "".join(self.words_list).strip()
-
-        # Check if the token is a sentence-ending punctuation
         if stripped_token in [".", "!", "?"]:
-            future = asyncio.run_coroutine_threadsafe(
-                self.search_and_play_audio(combined_words), self.loop
-            )
-            future.result()
-            self.timer = self.loop.call_later(self.timeout, self.set_answer_finished)
+            embedding = self.text_to_embedding(combined_words)
+            D, I = self.index.search(np.array([embedding]), 1)  # Search the nearest embedding in the index
+            if D[0][0] < threshold:  # Assuming threshold is a predefined threshold for similarity
+                matched_phrase = list(self.phrases_dict.keys())[I[0][0]]
+                audio_file_id = self.phrases_dict[matched_phrase]
+                future = asyncio.run_coroutine_threadsafe(
+                    self.play_audio_async(f"{audio_file_id}"), self.loop
+                )
+                future.result()
+            else:
+                future = asyncio.run_coroutine_threadsafe(
+                    self.stream_audio_playht(combined_words), self.loop
+                )
+                future.result()
 
     def set_answer_finished(self):
         print("Timer expired. Setting is_answer_finished to True.")
@@ -188,19 +214,18 @@ def chat_with_user():
         input_key="question",
     )
 
-    opening_line = "Hello I'm Jacob from Gadget Hub. We noticed that you were looking for Google Pixel phone on our website. Are you interested in purchasing a new phone at the moment?"
+    opening_line = "Hello I'm Jenny from Gadget Hub. We noticed that you were looking for Google Pixel phone on our website. Are you interested in purchasing a new phone at the moment?"
     print(opening_line)
     data, fs = sf.read(f"components/audio_files_pixel/intro.wav", dtype="float32")
-    #sd.play(data, fs)
-    #sd.wait()
+    sd.play(data, fs)
+    sd.wait()
 
     chat_history = [("Response", opening_line)]
     sales_bot_statement = "You are a sales bot. Your main objective is to convince the user to buy a Google Pixel phone rather than Iphone. Begin the conversation by discussing what features they are looking for. If the user shows interest in buying or knowing more, encourage them to visit the shop to experience the product firsthand. Be attentive to user's reactions and responses. If the user seems interested or willing to visit the shop, politely ask for their name and contact number to book an appointment for them. Say something like 'Can I have your name and contact number to schedule an appointment for you to visit our shop?'. Ensure to be courteous and maintain a friendly tone throughout the conversation, addressing any inquiries or concerns the user may have to facilitate the sales process. When they give you the name and number, end the conversation by telling then to have a great day. You have been given the chat history. Give response in short to the last query only and continue the conversation accordingly. "
 
     try:
         while True:
-            # query = transcribe_stream()
-            query = input("Enter your query (type 'exit' to end): ")
+            query = transcribe_stream()
             if query.lower() == "exit":
                 break
             start_time = datetime.datetime.now()
