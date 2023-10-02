@@ -94,7 +94,8 @@ class DictionaryCallback(BaseCallbackHandler):
         audio_file_id = self.phrases_dict.get(combined_words)
         if audio_file_id:
             print(f"Match found in Dictionary for combined words: {combined_words}")
-            await self.play_audio_async(f"{audio_file_id}.mp3")
+            # await self.play_audio_async(f"{audio_file_id}.mp3")
+            await self.play_audio_async(f"{audio_file_id}")
             self.words_list.clear()
         else:
             print(f"No match found in Dictionary for combined words: {combined_words}")
