@@ -81,6 +81,6 @@ def classify_and_play_audio(sentence):
     play_audio(audio_path)
 
 
-# # Usage
-refresh_learning_data()
-classify_and_play_audio("yeah I'm just")
+if __name__ == "__main__":
+    refresh_learning_data()
+    classify_and_play_audio("yeah I'm just")

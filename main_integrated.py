@@ -58,7 +58,7 @@ class DictionaryCallback(BaseCallbackHandler):
             "If camera quality is a top priority for you, the Google Pixel 6 would be an excellent choice.": "IfcameraqualityisatoppriorityforyoutheGooglePixel6wouldbeanexcellentchoice.wav",
             "Would you like to book an appointment to visit our showroom and experience the Google Pixel 6 firsthand?": "WouldyouliketobookanappointmenttovisitourshowroomandexperiencetheGooglePixel6firsthand.wav",
             "That 's great to hear!": "Thatsgreattohear.wav",
-            "We have a wide range of Google Pixel phones available in our showroom.": "WehaveawiderangeofGooglePixelphonesavailableinourshowroom.wav",
+            "We have a wide range of Google Pixel phones available in our store.": "WehaveawiderangeofGooglePixelphonesavailableinourshowroom.wav",
             "When would you like to visit us?": "Whenwouldyouliketovisitus.wav",
             "Can I have your name and contact number to schedule an appointment for you?": "CanIhaveyournameandcontactnumbertoscheduleanappointmentforyou.wav",
             "Great, John!": "GreatJohn.wav",
