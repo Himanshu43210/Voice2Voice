@@ -1,6 +1,3 @@
-# ### conda deactivate
-# conda activate aenv
-# python main_integrated.py
 import os
 import uuid
 import string
