@@ -10,3 +10,4 @@ pymongo
 scikit-learn
 nest_asyncio
 pydub
+pyaudio

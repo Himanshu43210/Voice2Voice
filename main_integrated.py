@@ -1,3 +1,6 @@
+# ### conda deactivate
+# conda activate aenv
+# python main_integrated.py
 import os
 import uuid
 import string
@@ -188,7 +191,7 @@ def chat_with_user():
         input_key="question",
     )
 
-    opening_line = "Hello I'm Jacob from Gadget Hub. We noticed that you were looking for Google Pixel phone on our website. Are you interested in purchasing a new phone at the moment?"
+    opening_line = "Hello I'm Jenny from Gadget Hub. We noticed that you were looking for Google Pixel phone on our website. Are you interested in purchasing a new phone at the moment?"
     print(opening_line)
     data, fs = sf.read(f"components/audio_files_pixel/intro.wav", dtype="float32")
     sd.play(data, fs)
