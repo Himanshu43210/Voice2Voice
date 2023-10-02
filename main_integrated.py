@@ -22,6 +22,8 @@ import nest_asyncio
 nest_asyncio.apply()
 from stream_text_to_audio import stream_text_to_audio
 from speech_to_text import transcribe_stream
+from pydub import AudioSegment
+from io import BytesIO
 
 # Load environment variables
 load_dotenv()
@@ -76,7 +78,7 @@ class DictionaryCallback(BaseCallbackHandler):
 
     async def play_audio_async(self, file_id):
         print("play_audio_async called")
-        file_path = f"elevenlabs_audio_files_phrases/{file_id}"
+        file_path = f"components/audio_files_pixel/{file_id}"
         if os.path.exists(file_path):
             data, samplerate = sf.read(file_path)
             sd.play(data, samplerate)
