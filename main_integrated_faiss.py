@@ -16,6 +16,8 @@ import soundfile as sf
 import string
 import asyncio
 import nest_asyncio
+import faiss
+from sentence_transformers import SentenceTransformer
 
 nest_asyncio.apply()
 from stream_text_to_audio import stream_text_to_audio
@@ -71,7 +73,15 @@ class DictionaryCallback(BaseCallbackHandler):
         self.is_answer_finished = False
         self.timeout = 0.2  # Set your desired timeout value in seconds
         self.timer = None
+
+        # Initialize the sentence transformer model
+        self.model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
         
+        # Create embeddings for your phrases and store them in a FAISS index
+        self.phrase_embeddings = self.model.encode(list(self.phrases_dict.keys()))
+        self.index = faiss.IndexFlatL2(self.phrase_embeddings.shape[1])
+        self.index.add(self.phrase_embeddings)
+
     def start_loop(self, loop):
         asyncio.set_event_loop(loop)
         loop.run_forever()
@@ -98,17 +108,22 @@ class DictionaryCallback(BaseCallbackHandler):
         if self.is_answer_finished:  # Check whether the answer is finished or not
             print("Answer is finished. Not matching.")
             return
-        audio_file_id = self.phrases_dict.get(combined_words)
+
+        # Search for the most similar phrase in the FAISS index
+        query_embedding = self.model.encode([combined_words])
+        D, I = self.index.search(query_embedding, k=1)
+        closest_phrase = list(self.phrases_dict.keys())[I[0][0]]
+
+        audio_file_id = self.phrases_dict.get(closest_phrase)
         if audio_file_id:
             print(f"Match found in Dictionary for combined words: {combined_words}")
-            # await self.play_audio_async(f"{audio_file_id}.mp3")
             await self.play_audio_async(f"{audio_file_id}")
             self.words_list.clear()
         else:
             print(f"No match found in Dictionary for combined words: {combined_words}")
             await self.stream_audio_playht(
                 combined_words
-            )  # Call PlayHT API when no match is found
+            )
 
     def on_llm_new_token(self, token: str, **kwargs) -> None:
         if self.timer:
@@ -128,14 +143,13 @@ class DictionaryCallback(BaseCallbackHandler):
 
         combined_words = "".join(self.words_list).strip()
 
-        # Check if the token is a sentence-ending punctuation
         if stripped_token in [".", "!", "?"]:
             future = asyncio.run_coroutine_threadsafe(
                 self.search_and_play_audio(combined_words), self.loop
             )
             future.result()
             self.timer = self.loop.call_later(self.timeout, self.set_answer_finished)
-            self.words_list.clear()  
+            self.words_list.clear()  # Clear the words_list after a sentence is finished
 
     def set_answer_finished(self):
         print("Timer expired. Setting is_answer_finished to True.")
@@ -197,7 +211,7 @@ def chat_with_user():
 
     chat_history = [("Response", opening_line)]
     sales_bot_statement = "You are a sales bot. Your main objective is to convince the user to buy a Google Pixel phone rather than Iphone. Begin the conversation by discussing what features they are looking for. If the user shows interest in buying or knowing more, encourage them to visit the shop to experience the product firsthand. Be attentive to user's reactions and responses. If the user seems interested or willing to visit the shop, politely ask for their name and contact number to book an appointment for them. Say something like 'Can I have your name and contact number to schedule an appointment for you to visit our shop?'. Ensure to be courteous and maintain a friendly tone throughout the conversation, addressing any inquiries or concerns the user may have to facilitate the sales process. When they give you the name and number, end the conversation by telling then to have a great day. You have been given the chat history. Give response in short to the last query only and continue the conversation accordingly. "
-
+    
     try:
         while True:
             query = transcribe_stream()
@@ -223,11 +237,11 @@ def chat_with_user():
 
             # Call classify_and_play_audio synchronously
             classify_and_play_audio(query)  # <-- Call the function
+            
     finally:
         # Stop the event loop and join the thread when 'exit' is pressed
         llm.callbacks[0].stop_loop()
         llm.callbacks[0].thread.join()
-
 
 if __name__ == "__main__":
     chat_history = chat_with_user()

@@ -6,7 +6,8 @@ tiktoken
 pymongo
 # sentence_transformers
 # pandas
-# faiss 
+faiss-cpu
+sentence-transformers
 scikit-learn
 nest_asyncio
 pydub
