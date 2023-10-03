@@ -76,9 +76,13 @@ def classify_and_play_audio(sentence):
     # Classify a new sentence
     audio_file = loaded_model.predict([sentence])[0]
     # Path to the audio file
+<<<<<<< Updated upstream
     audio_path = (
         f"G:/Workspace/git/AI/Voice2Voice/components/audio_fillers/{audio_file}"
     )
+=======
+    audio_path = f"components/audio_fillers/{audio_file}"
+>>>>>>> Stashed changes
     # Play the audio file
     play_audio(audio_path)
 
