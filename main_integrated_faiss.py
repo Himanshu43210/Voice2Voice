@@ -155,11 +155,11 @@ class DictionaryCallback(BaseCallbackHandler):
                 await self.stream_audio_playht(
                     combined_words
                 )
-        else:
-            print(f"No match found in Dictionary for combined words: {combined_words}")
-            await self.stream_audio_playht(
-                combined_words
-            )
+        # else:
+        #     print(f"No match found in Dictionary for combined words: {combined_words}")
+        #     await self.stream_audio_playht(
+        #         combined_words
+        #     )
 
 
     def on_llm_new_token(self, token: str, **kwargs) -> None:
