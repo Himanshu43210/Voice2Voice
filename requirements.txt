@@ -4,11 +4,12 @@ python-dotenv
 chromadb
 tiktoken
 pymongo
-# sentence_transformers
-# pandas
 faiss-cpu
 sentence-transformers
 scikit-learn
 nest_asyncio
 pydub
 pyaudio
+sounddevice
+soundfile
+google-cloud-speech
