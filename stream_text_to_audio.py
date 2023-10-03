@@ -12,7 +12,7 @@ def stream_text_to_audio(text, api_key, user_id):  # Add user_id parameter
         "Authorization": f"Bearer {api_key}",  # Add Authorization header
         "x-user-id": user_id,  # Add x-user-id header
     }
-    payload = {"text": text, "voice": "larry"}  # Use the voice ID you want to use
+    payload = {"text": text, "voice": "Michael"}  # Use the voice ID you want to use
     response = requests.post(
         url, headers=headers, json=payload, stream=True
     )  # Set stream=True to stream the response

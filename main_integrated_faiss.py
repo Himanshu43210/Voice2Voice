@@ -112,18 +112,27 @@ class DictionaryCallback(BaseCallbackHandler):
         # Search for the most similar phrase in the FAISS index
         query_embedding = self.model.encode([combined_words])
         D, I = self.index.search(query_embedding, k=1)
-        closest_phrase = list(self.phrases_dict.keys())[I[0][0]]
+        distance = D[0][0]
+        similarity = 1 - distance  # Convert distance to similarity
 
-        audio_file_id = self.phrases_dict.get(closest_phrase)
-        if audio_file_id:
-            print(f"Match found in Dictionary for combined words: {combined_words}")
-            await self.play_audio_async(f"{audio_file_id}")
-            self.words_list.clear()
+        if similarity > 0.7:  # Check if similarity is more than 70%
+            closest_phrase = list(self.phrases_dict.keys())[I[0][0]]
+            audio_file_id = self.phrases_dict.get(closest_phrase)
+            if audio_file_id:
+                print(f"Match found in Dictionary for combined words: {combined_words}")
+                await self.play_audio_async(f"{audio_file_id}")
+                self.words_list.clear()
+            else:
+                print(f"No match found in Dictionary for combined words: {combined_words}")
+                await self.stream_audio_playht(
+                    combined_words
+                )
         else:
             print(f"No match found in Dictionary for combined words: {combined_words}")
             await self.stream_audio_playht(
                 combined_words
             )
+
 
     def on_llm_new_token(self, token: str, **kwargs) -> None:
         if self.timer:
