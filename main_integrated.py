@@ -135,6 +135,7 @@ class DictionaryCallback(BaseCallbackHandler):
             )
             future.result()
             self.timer = self.loop.call_later(self.timeout, self.set_answer_finished)
+            self.words_list.clear()  
 
     def set_answer_finished(self):
         print("Timer expired. Setting is_answer_finished to True.")
