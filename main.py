@@ -39,10 +39,6 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 os.environ["PLAYHT_API_KEY"] = PLAYHT_API_KEY
 os.environ["PLAYHT_USER_ID"] = PLAYHT_USER_ID
 
-sys.path.append("./components")
-
-
-
 class DictionaryCallback(BaseCallbackHandler):
     def __init__(self, q):
         self.q = q
