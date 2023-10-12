@@ -13,3 +13,4 @@ pyaudio
 sounddevice
 soundfile
 google.cloud.speech
+wavio
