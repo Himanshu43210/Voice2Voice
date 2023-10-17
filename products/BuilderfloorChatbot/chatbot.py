@@ -8,13 +8,15 @@ from langchain.chat_models import ChatOpenAI
 # Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-CSV_FILE_PATH = os.environ.get("CSV_FILE_PATH")
+
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-def chat_with_user(userQuestion, history):
+
+def text_to_text_conversation(userQuestion, history, csvLocation):
+    CSV_FILE_PATH = csvLocation + ""
     if userQuestion.lower() == "exit":
         return "Thank You"
-    
+
     # Setup initial parameters and instances
     loader = CSVLoader(file_path=CSV_FILE_PATH)
     index_creator = VectorstoreIndexCreator()
@@ -36,10 +38,12 @@ def chat_with_user(userQuestion, history):
     # Get the answer from langchain
     response = chain({"question": full_query + userQuestion})
     answer = response.get('result', 'No answer found.')
-    
+
     return answer
+
 
 # Test the method
 if __name__ == "__main__":
-    chatResponse = chat_with_user("What do you sell and what is my name?", "[ Hi, My name is Isha.]")
+    chatResponse = text_to_text_conversation(
+        "What do you sell and what is my name?", "Hi, My name is Isha.", "builder_floor.csv")
     print(chatResponse)

@@ -24,6 +24,7 @@ nest_asyncio.apply()
 from stream_text_to_audio import stream_text_to_audio
 
 sys.path.append("./components")
+sys.path.append("./constants")
 from speech_to_text import transcribe_stream
 from filler_mapping import classify_and_play_audio, refresh_learning_data
 
@@ -38,7 +39,7 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 os.environ["PLAYHT_API_KEY"] = PLAYHT_API_KEY
 os.environ["PLAYHT_USER_ID"] = PLAYHT_USER_ID
 
-sys.path.append("./components")
+# sys.path.append("./components")
 
 
 class DictionaryCallback(BaseCallbackHandler):
@@ -197,11 +198,6 @@ class DictionaryCallback(BaseCallbackHandler):
 
     def stop_loop(self):
         self.loop.call_soon_threadsafe(self.loop.stop)
-
-
-def generate_unique_id():
-    return str(uuid.uuid4())
-conversation_id = generate_unique_id()
 
 
 def langchain_tasks(query, full_query, chain, start_time):  # <-- Add start_time as an argument

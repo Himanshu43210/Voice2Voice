@@ -14,3 +14,4 @@ sounddevice
 soundfile
 google.cloud.speech
 wavio
+flask
