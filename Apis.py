@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import sys
 # Assuming the function chat_with_user is in a file named chat.py
-sys.path.append("./BuilderfloorChatbot")
+sys.path.append("./products/BuilderfloorChatbot")
 from chatbot import text_to_text_conversation
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ def chat_endpoint():
     userQuestion = data.get('userQuestion', '')
     history = data.get('history', '')
     
-    response = text_to_text_conversation(userQuestion, history,"BuilderfloorChatbot/builder_floor.csv")
+    response = text_to_text_conversation(userQuestion, history,"products/BuilderfloorChatbot/builder_floor.csv")
     
     return jsonify({"data": response}), 200
 
