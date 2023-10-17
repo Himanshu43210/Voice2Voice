@@ -1,6 +1,4 @@
-# Removing extra print statements
 import os
-import string
 from dotenv import load_dotenv
 from langchain.document_loaders import CSVLoader
 from langchain.indexes import VectorstoreIndexCreator
@@ -10,8 +8,6 @@ from langchain.callbacks.base import BaseCallbackHandler
 import datetime
 from threading import Thread
 from queue import Queue
-import string
-import asyncio
 
 # Load environment variables
 load_dotenv()
@@ -20,22 +16,12 @@ CSV_FILE_PATH = os.environ.get("CSV_FILE_PATH")
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-# sys.path.append("./components")
-
-
 class DictionaryCallback(BaseCallbackHandler):
     def __init__(self, q):
         self.q = q
-        self.words_list = []
-        self.loop = asyncio.new_event_loop()
-        self.thread.start()
         self.is_answer_finished = False
         self.timeout = 0.2  # Set your desired timeout value in seconds
         self.timer = None
-
-    def stop_loop(self):
-        self.loop.call_soon_threadsafe(self.loop.stop)
-
 
 # <-- Add start_time as an argument
 def langchain_tasks(query, full_query, chain, start_time):
